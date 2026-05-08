@@ -1,0 +1,50 @@
+{
+  "store_name": "StoreName",
+  "use_tensorrt": true,
+  "recording_jetson": {
+    "host": "100.64.0.130",
+    "user": "jetson",
+    "password": "1p",
+    "ssh_key": "",
+    "video_base_path": "/home/user/store_recordings/1000001590/event_videos",
+    "poll_interval_seconds": 30,
+    "min_file_age_seconds": 10
+  },
+
+  "video": {
+    "expected_fps": 25,
+    "processing_fps": 10
+  },
+
+  "tracking": {
+    "reid_distance": 0.65,
+    "warmup_frames": 10,
+    "bank_size": 10,
+    "update_gate": 0.8,
+    "max_box_jump": 0.3,
+    "max_lost_seconds": 25,
+    "conf_threshold": 0.45,
+    "min_crop_w": 32,
+    "min_crop_h": 64
+  },
+
+  "face_capture": {
+    "max_faces_per_person": 10
+  },
+
+  "fr": {
+    "similarity_threshold": 0.8,
+    "customer_cluster_threshold": 0.6
+  },
+
+  "line": {
+    "A": { "x": 0.0, "y": 0.5 },
+    "B": { "x": 1.0, "y": 0.5 }
+  },
+  "in_side": "below",
+
+  "telegram": {
+    "bot_token": "",
+    "chat_id": ""
+  }
+}

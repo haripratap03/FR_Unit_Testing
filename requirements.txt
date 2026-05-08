@@ -1,0 +1,10 @@
+numpy
+ultralytics
+boxmot
+opencv-python
+insightface
+faiss-cpu
+onnxruntime-gpu
+openpyxl
+Pillow
+matplotlib

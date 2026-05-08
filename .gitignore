@@ -1,0 +1,73 @@
+# Runtime artifacts (project-specific)
+logs.txt
+logs/
+data/
+vector_db/
+
+# Models — downloaded/copied per machine, not tracked
+models/
+insightface_models/
+*.pt
+*.pth
+*.onnx
+*.bin
+*.pkl
+*.h5
+
+# FAISS indices
+*.index
+*.faiss
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Virtual environments
+myenv/
+.venv/
+venv/
+env/
+
+# Output / generated files
+*.csv
+*.xlsx
+*.xls
+output/
+results/
+
+# Media
+*.avi
+*.mp4
+*.mov
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Secrets / local config overrides
+.env
+*.local
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+/.claude
+/.pytest_cache
+/__pycache__
+

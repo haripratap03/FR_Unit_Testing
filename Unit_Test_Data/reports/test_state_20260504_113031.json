@@ -1,0 +1,1090 @@
+{
+  "version": 1,
+  "run_date": "2026-05-04",
+  "run_ts": "2026-05-04 11:30:31",
+  "run_tag": "20260504_113031",
+  "data_source": "Real CCTV footage  |  data/2026-04-29/videos/videos/",
+  "test_approach": "Integration \u2014 actual YOLO / InsightFace / OSNet; no mocking",
+  "report_file": "FR_Thor_VideoTest_Report_20260504_113031.xlsx",
+  "features": {
+    "face_detection": {
+      "name": "Face Detection",
+      "color": "FF2F5496",
+      "counts": {
+        "PASS": 41,
+        "FAIL": 3,
+        "SKIP": 0,
+        "ERROR": 0,
+        "NOT RUN": 0
+      },
+      "tests": {
+        "FD-01": {
+          "target_function": "score_face",
+          "description": "Low-confidence face detection should be rejected outright",
+          "expected": "Score is 0 (rejected as low-confidence)",
+          "verdict": "PASS",
+          "actual": "Score is 0 (rejected as low-confidence)",
+          "notes": ""
+        },
+        "FD-02": {
+          "target_function": "score_face",
+          "description": "Face just barely passing the confidence threshold should still be scored",
+          "expected": "Score is greater than 0",
+          "verdict": "PASS",
+          "actual": "Score is greater than 0",
+          "notes": ""
+        },
+        "FD-03": {
+          "target_function": "score_face",
+          "description": "Tiny face crop (35x35) should be rejected as too small",
+          "expected": "Score is 0 (rejected as too small)",
+          "verdict": "PASS",
+          "actual": "Score is 0 (rejected as too small)",
+          "notes": ""
+        },
+        "FD-04": {
+          "target_function": "score_face",
+          "description": "Face crop right at the size limit (40x40) should be scored",
+          "expected": "Score is greater than 0",
+          "verdict": "PASS",
+          "actual": "Score is greater than 0",
+          "notes": ""
+        },
+        "FD-05": {
+          "target_function": "score_face",
+          "description": "A clean frontal face image should score high",
+          "expected": "Score is 70 or higher",
+          "verdict": "FAIL",
+          "actual": "score=0, components=low_yolo",
+          "notes": ""
+        },
+        "FD-06": {
+          "target_function": "score_face",
+          "description": "A blurry face crop should get a low blur sub-score",
+          "expected": "Blur sub-score is below 1.0",
+          "verdict": "PASS",
+          "actual": "Blur sub-score is below 1.0",
+          "notes": ""
+        },
+        "FD-07": {
+          "target_function": "score_face",
+          "description": "A side-profile face should get a low pose sub-score",
+          "expected": "Pose sub-score is below 5",
+          "verdict": "FAIL",
+          "actual": "score=73.07, pose_component=10.00",
+          "notes": ""
+        },
+        "FD-08": {
+          "target_function": "score_face",
+          "description": "Both ears visible should reduce the pose sub-score",
+          "expected": "Pose sub-score is 16 or lower",
+          "verdict": "PASS",
+          "actual": "Pose sub-score is 16 or lower",
+          "notes": ""
+        },
+        "FD-09": {
+          "target_function": "score_face",
+          "description": "When all 5 face keypoints have very low confidence, fall back to a fixed pose score",
+          "expected": "Pose sub-score equals 6.0",
+          "verdict": "PASS",
+          "actual": "Pose sub-score equals 6.0",
+          "notes": ""
+        },
+        "FD-10": {
+          "target_function": "score_face",
+          "description": "When no face keypoints are detected at all, use a neutral pose score",
+          "expected": "Pose sub-score equals 10",
+          "verdict": "PASS",
+          "actual": "Pose sub-score equals 10",
+          "notes": ""
+        },
+        "FD-11": {
+          "target_function": "score_face",
+          "description": "An overexposed (all-bright) image should get a low brightness sub-score",
+          "expected": "Brightness sub-score is below 5",
+          "verdict": "FAIL",
+          "actual": "mean_gray=186.5, score=70.82, brightness_component=8.48",
+          "notes": ""
+        },
+        "FD-12": {
+          "target_function": "check_quality",
+          "description": "Quality score 42 (above the 25 floor) should pass",
+          "expected": "Pass; score 42; no rejection reason",
+          "verdict": "PASS",
+          "actual": "Pass; score 42; no rejection reason",
+          "notes": ""
+        },
+        "FD-13": {
+          "target_function": "check_quality",
+          "description": "Quality score 18 (below the 25 floor) should fail",
+          "expected": "Fail; score 18; reason mentions 'below_25'",
+          "verdict": "PASS",
+          "actual": "Fail; score 18; reason mentions 'below_25'",
+          "notes": ""
+        },
+        "FD-14": {
+          "target_function": "check_quality",
+          "description": "Filename without a quality tag passes automatically",
+          "expected": "Pass; score reported as -1 (no tag)",
+          "verdict": "PASS",
+          "actual": "Pass; score reported as -1 (no tag)",
+          "notes": ""
+        },
+        "FD-15": {
+          "target_function": "check_quality",
+          "description": "Quality score exactly at the 25 threshold passes (strict less-than gate)",
+          "expected": "Pass; score 25",
+          "verdict": "PASS",
+          "actual": "Pass; score 25",
+          "notes": ""
+        },
+        "FD-16": {
+          "target_function": "check_skin_tone",
+          "description": "Skin-coloured pixels should pass the skin-tone check",
+          "expected": "Skin check passes",
+          "verdict": "PASS",
+          "actual": "Skin check passes",
+          "notes": ""
+        },
+        "FD-17": {
+          "target_function": "check_skin_tone",
+          "description": "Pure blue image (no skin pixels) should fail",
+          "expected": "Skin check fails",
+          "verdict": "PASS",
+          "actual": "Skin check fails",
+          "notes": ""
+        },
+        "FD-18": {
+          "target_function": "check_skin_tone",
+          "description": "Skin only at the corners (not centre) should fail (centre is checked)",
+          "expected": "Skin check fails",
+          "verdict": "PASS",
+          "actual": "Skin check fails",
+          "notes": ""
+        },
+        "FD-19": {
+          "target_function": "check_keypoints",
+          "description": "All 5 face keypoints inside the bounding box should pass",
+          "expected": "Pass; 5 keypoints inside",
+          "verdict": "PASS",
+          "actual": "Pass; 5 keypoints inside",
+          "notes": ""
+        },
+        "FD-20": {
+          "target_function": "check_keypoints",
+          "description": "Only 2 keypoints inside (need at least 3) should fail",
+          "expected": "Fail; 2 keypoints inside",
+          "verdict": "PASS",
+          "actual": "Fail; 2 keypoints inside",
+          "notes": ""
+        },
+        "FD-21": {
+          "target_function": "check_keypoints",
+          "description": "InsightFace finds no face -> keypoint check fails",
+          "expected": "Fail; no face detected",
+          "verdict": "PASS",
+          "actual": "Fail; no face detected",
+          "notes": ""
+        },
+        "FD-22": {
+          "target_function": "_check_skin_tone",
+          "description": "Skin-coloured pixels pass the pipeline's skin check",
+          "expected": "Returns True",
+          "verdict": "PASS",
+          "actual": "Returns True",
+          "notes": ""
+        },
+        "FD-23": {
+          "target_function": "_check_skin_tone",
+          "description": "Pure blue pixels fail the pipeline's skin check",
+          "expected": "Returns False",
+          "verdict": "PASS",
+          "actual": "Returns False",
+          "notes": ""
+        },
+        "FD-24": {
+          "target_function": "_count_kps_in_bbox",
+          "description": "All 5 keypoints clearly inside the box should be counted",
+          "expected": "Count is 5",
+          "verdict": "PASS",
+          "actual": "Count is 5",
+          "notes": ""
+        },
+        "FD-25": {
+          "target_function": "_count_kps_in_bbox",
+          "description": "All keypoints far outside the box should not be counted",
+          "expected": "Count is 0",
+          "verdict": "PASS",
+          "actual": "Count is 0",
+          "notes": ""
+        },
+        "FD-26": {
+          "target_function": "_count_kps_in_bbox",
+          "description": "A keypoint exactly on the margin boundary still counts",
+          "expected": "Count is 1",
+          "verdict": "PASS",
+          "actual": "Count is 1",
+          "notes": ""
+        },
+        "FD-27": {
+          "target_function": "_count_kps_in_bbox",
+          "description": "First 3 keypoints inside, last 2 outside should give a count of 3",
+          "expected": "Count is 3",
+          "verdict": "PASS",
+          "actual": "Count is 3",
+          "notes": ""
+        },
+        "FD-28": {
+          "target_function": "_enhance_contrast",
+          "description": "A dark image becomes brighter after contrast enhancement",
+          "expected": "Output is brighter than input",
+          "verdict": "PASS",
+          "actual": "Output is brighter than input",
+          "notes": ""
+        },
+        "FD-29": {
+          "target_function": "_enhance_contrast",
+          "description": "Contrast enhancement does not modify the original image in place",
+          "expected": "Original image unchanged",
+          "verdict": "PASS",
+          "actual": "Original image unchanged",
+          "notes": ""
+        },
+        "FD-30": {
+          "target_function": "_detect_face",
+          "description": "When two faces are present, the larger one is picked and the embedding is unit-length",
+          "expected": "Larger face selected; embedding length about 1.0",
+          "verdict": "PASS",
+          "actual": "Larger face selected; embedding length about 1.0",
+          "notes": ""
+        },
+        "FD-31": {
+          "target_function": "_detect_face",
+          "description": "A raw embedding gets normalized to unit length",
+          "expected": "Embedding length about 1.0",
+          "verdict": "PASS",
+          "actual": "Embedding length about 1.0",
+          "notes": ""
+        },
+        "FD-32": {
+          "target_function": "_detect_face",
+          "description": "If no face is detected, return None (not a zero vector)",
+          "expected": "Returns None",
+          "verdict": "PASS",
+          "actual": "Returns None",
+          "notes": ""
+        },
+        "FD-33": {
+          "target_function": "_extract_with_strategies",
+          "description": "Normal 200x200 image: 'direct' strategy works on the first try",
+          "expected": "Strategy used: direct",
+          "verdict": "PASS",
+          "actual": "Strategy used: direct",
+          "notes": ""
+        },
+        "FD-34": {
+          "target_function": "_extract_with_strategies",
+          "description": "Small 60x80 image: triggers the 'upscaled' strategy",
+          "expected": "Strategy used: upscaled",
+          "verdict": "PASS",
+          "actual": "Strategy used: upscaled",
+          "notes": ""
+        },
+        "FD-35": {
+          "target_function": "_extract_with_strategies",
+          "description": "When direct fails on a 250x250 image, falls back to CLAHE-enhanced",
+          "expected": "Strategy used: enhanced",
+          "verdict": "PASS",
+          "actual": "Strategy used: enhanced",
+          "notes": ""
+        },
+        "FD-36": {
+          "target_function": "_extract_with_strategies",
+          "description": "When both direct and CLAHE fail, falls back to padded",
+          "expected": "Strategy used: padded",
+          "verdict": "PASS",
+          "actual": "Strategy used: padded",
+          "notes": ""
+        },
+        "FD-37": {
+          "target_function": "_extract_with_strategies",
+          "description": "When all 4 strategies fail, return (None, None) without crashing",
+          "expected": "Returns (None, None)",
+          "verdict": "PASS",
+          "actual": "Returns (None, None)",
+          "notes": ""
+        },
+        "FD-38": {
+          "target_function": "_batch_capture_faces",
+          "description": "Valid 100x100 face with high confidence and cooldown elapsed should be captured",
+          "expected": "Face submitted for saving",
+          "verdict": "PASS",
+          "actual": "Face submitted for saving",
+          "notes": ""
+        },
+        "FD-39": {
+          "target_function": "_batch_capture_faces",
+          "description": "If last capture was 0.5s ago and cooldown is 1.5s, skip capture",
+          "expected": "Capture skipped",
+          "verdict": "PASS",
+          "actual": "Capture skipped",
+          "notes": ""
+        },
+        "FD-40": {
+          "target_function": "_batch_capture_faces",
+          "description": "Detection with low confidence (0.30) gets a score of 0 and is discarded",
+          "expected": "Not submitted for saving",
+          "verdict": "PASS",
+          "actual": "Not submitted for saving",
+          "notes": ""
+        },
+        "FD-41": {
+          "target_function": "_batch_capture_faces",
+          "description": "If YOLO returns no boxes, no capture is attempted",
+          "expected": "Not submitted for saving",
+          "verdict": "PASS",
+          "actual": "Not submitted for saving",
+          "notes": ""
+        },
+        "FD-42": {
+          "target_function": "_batch_capture_faces",
+          "description": "Already at max faces; new face quality (45) lower than worst (50) -> not saved",
+          "expected": "New face not saved",
+          "verdict": "PASS",
+          "actual": "New face not saved",
+          "notes": ""
+        },
+        "FD-43": {
+          "target_function": "_batch_capture_faces",
+          "description": "At max faces; new face quality (65) higher than worst (30) -> worst evicted, new saved",
+          "expected": "Quality-30 face evicted; quality-65 saved",
+          "verdict": "PASS",
+          "actual": "Quality-30 face evicted; quality-65 saved",
+          "notes": ""
+        },
+        "FD-44": {
+          "target_function": "_batch_capture_faces",
+          "description": "Two detections (confidence 0.60 and 0.90) -> highest-confidence one wins",
+          "expected": "Detection at index 1 (conf 0.90) saved",
+          "verdict": "PASS",
+          "actual": "Detection at index 1 (conf 0.90) saved",
+          "notes": ""
+        }
+      }
+    },
+    "face_recognition": {
+      "name": "Face Recognition",
+      "color": "FF375623",
+      "counts": {
+        "PASS": 24,
+        "FAIL": 0,
+        "SKIP": 1,
+        "ERROR": 0,
+        "NOT RUN": 0
+      },
+      "tests": {
+        "FR-EX-01": {
+          "target_function": "extract_embeddings",
+          "description": "Folder with multiple face images returns at least one unit-length embedding",
+          "expected": "At least 1 embedding; length about 1.0",
+          "verdict": "PASS",
+          "actual": "At least 1 embedding; length about 1.0",
+          "notes": ""
+        },
+        "FR-EX-02": {
+          "target_function": "extract_embeddings",
+          "description": "Empty folder returns no embeddings",
+          "expected": "Zero embeddings",
+          "verdict": "PASS",
+          "actual": "Zero embeddings",
+          "notes": ""
+        },
+        "FR-EX-03": {
+          "target_function": "extract_embeddings",
+          "description": "body_snapshot.jpg in folder is excluded from the face scan",
+          "expected": "body_snapshot.jpg skipped",
+          "verdict": "PASS",
+          "actual": "body_snapshot.jpg skipped",
+          "notes": ""
+        },
+        "FR-EX-04": {
+          "target_function": "extract_embeddings",
+          "description": "When face images are tiny, fall back to body_snapshot",
+          "expected": "body_snapshot embedding used",
+          "verdict": "SKIP",
+          "actual": "",
+          "notes": ""
+        },
+        "FR-EX-05": {
+          "target_function": "extract_embeddings",
+          "description": "Non-image junk files in folder are ignored (only .jpg is processed)",
+          "expected": "Junk files ignored",
+          "verdict": "PASS",
+          "actual": "Junk files ignored",
+          "notes": ""
+        },
+        "FR-PD-01": {
+          "target_function": "pick_diverse",
+          "description": "Diversity selection picks the most spread-out embeddings",
+          "expected": "Diverse subset selected",
+          "verdict": "PASS",
+          "actual": "Diverse subset selected",
+          "notes": ""
+        },
+        "FR-PD-02": {
+          "target_function": "pick_diverse",
+          "description": "Result length never exceeds the requested cap",
+          "expected": "Length is at most max_extra",
+          "verdict": "PASS",
+          "actual": "Length is at most max_extra",
+          "notes": ""
+        },
+        "FR-PD-03": {
+          "target_function": "pick_diverse",
+          "description": "Pure-math test: cosine distances are computed correctly",
+          "expected": "Distances correct",
+          "verdict": "PASS",
+          "actual": "Distances correct",
+          "notes": ""
+        },
+        "FR-PD-04": {
+          "target_function": "pick_diverse",
+          "description": "If fewer embeddings exist than the cap, return all of them",
+          "expected": "Length equals what is available",
+          "verdict": "PASS",
+          "actual": "Length equals what is available",
+          "notes": ""
+        },
+        "FR-PD-05": {
+          "target_function": "pick_diverse",
+          "description": "Cap of 0 returns an empty list",
+          "expected": "Empty list",
+          "verdict": "PASS",
+          "actual": "Empty list",
+          "notes": ""
+        },
+        "FR-PD-06": {
+          "target_function": "pick_diverse",
+          "description": "Same input always produces the same output",
+          "expected": "Output is deterministic",
+          "verdict": "PASS",
+          "actual": "Output is deterministic",
+          "notes": ""
+        },
+        "FR-SM-01": {
+          "target_function": "classify_with_faiss",
+          "description": "Face similarity at or above 0.80 is classified as staff",
+          "expected": "Classified as staff",
+          "verdict": "PASS",
+          "actual": "Classified as staff",
+          "notes": ""
+        },
+        "FR-SM-02": {
+          "target_function": "classify_with_faiss",
+          "description": "Different person with similarity below 0.80 is classified as customer",
+          "expected": "Classified as customer",
+          "verdict": "PASS",
+          "actual": "Classified as customer",
+          "notes": ""
+        },
+        "FR-SM-03": {
+          "target_function": "classify_with_faiss",
+          "description": "Boundary case: similarity exactly at the threshold",
+          "expected": "Boundary handled correctly",
+          "verdict": "PASS",
+          "actual": "Boundary handled correctly",
+          "notes": ""
+        },
+        "FR-SM-04": {
+          "target_function": "classify_with_faiss",
+          "description": "Person with zero face images is marked as no_face",
+          "expected": "Classified as no_face",
+          "verdict": "PASS",
+          "actual": "Classified as no_face",
+          "notes": ""
+        },
+        "FR-SM-05": {
+          "target_function": "classify_with_faiss",
+          "description": "Person with several embeddings: highest similarity wins",
+          "expected": "Highest similarity is used",
+          "verdict": "PASS",
+          "actual": "Highest similarity is used",
+          "notes": ""
+        },
+        "FR-SM-06": {
+          "target_function": "classify_with_faiss",
+          "description": "Empty staff index -> person classified as customer",
+          "expected": "Classified as customer",
+          "verdict": "PASS",
+          "actual": "Classified as customer",
+          "notes": ""
+        },
+        "FR-SM-07": {
+          "target_function": "classify_with_faiss",
+          "description": "Out-of-range registry index does not crash",
+          "expected": "No exception raised",
+          "verdict": "PASS",
+          "actual": "No exception raised",
+          "notes": ""
+        },
+        "FR-CC-01": {
+          "target_function": "greedy_cluster",
+          "description": "Same person split across two tracks (similar enough) merges into 1 cluster",
+          "expected": "1 cluster",
+          "verdict": "PASS",
+          "actual": "1 cluster",
+          "notes": ""
+        },
+        "FR-CC-02": {
+          "target_function": "greedy_cluster",
+          "description": "Two clearly different people stay as 2 separate clusters",
+          "expected": "2 clusters",
+          "verdict": "PASS",
+          "actual": "2 clusters",
+          "notes": ""
+        },
+        "FR-CC-03": {
+          "target_function": "greedy_cluster",
+          "description": "Single customer produces 1 cluster",
+          "expected": "1 cluster",
+          "verdict": "PASS",
+          "actual": "1 cluster",
+          "notes": ""
+        },
+        "FR-CC-04": {
+          "target_function": "greedy_cluster",
+          "description": "No customers at all -> empty cluster list",
+          "expected": "Empty list",
+          "verdict": "PASS",
+          "actual": "Empty list",
+          "notes": ""
+        },
+        "FR-CC-06": {
+          "target_function": "greedy_cluster",
+          "description": "Boundary similarity exactly at the cluster threshold merges",
+          "expected": "Merged into the same cluster",
+          "verdict": "PASS",
+          "actual": "Merged into the same cluster",
+          "notes": ""
+        },
+        "FR-CC-07": {
+          "target_function": "greedy_cluster",
+          "description": "no_face person is not included in any cluster",
+          "expected": "no_face person excluded",
+          "verdict": "PASS",
+          "actual": "no_face person excluded",
+          "notes": ""
+        },
+        "FR-CC-08": {
+          "target_function": "greedy_cluster",
+          "description": "Five identical embeddings collapse into 1 cluster",
+          "expected": "1 cluster",
+          "verdict": "PASS",
+          "actual": "1 cluster",
+          "notes": ""
+        }
+      }
+    },
+    "face_tracking": {
+      "name": "Face Tracking",
+      "color": "FF7B2C2C",
+      "counts": {
+        "PASS": 61,
+        "FAIL": 0,
+        "SKIP": 0,
+        "ERROR": 0,
+        "NOT RUN": 0
+      },
+      "tests": {
+        "FT-01": {
+          "target_function": "OSNetExtractor.extract_batch",
+          "description": "Output list length matches box count; each embedding is 512-dimensional",
+          "expected": "Length matches; each shape is (512,)",
+          "verdict": "PASS",
+          "actual": "Length matches; each shape is (512,)",
+          "notes": "len_result=3 | len_boxes=3"
+        },
+        "FT-02": {
+          "target_function": "OSNetExtractor.extract_batch",
+          "description": "Crop too small (25x55) returns None at that position; valid crop returns embedding",
+          "expected": "Index 0 is None; index 1 has shape (512,)",
+          "verdict": "PASS",
+          "actual": "Index 0 is None; index 1 has shape (512,)",
+          "notes": "index0_is_none=True | index1_shape=(512,)"
+        },
+        "FT-03": {
+          "target_function": "OSNetExtractor.extract_batch",
+          "description": "All crops too small -> every result is None; OSNet model is not even called",
+          "expected": "Every result is None",
+          "verdict": "PASS",
+          "actual": "Every result is None",
+          "notes": "all_none=True"
+        },
+        "FT-04": {
+          "target_function": "OSNetExtractor.extract_batch",
+          "description": "All real embeddings have unit length",
+          "expected": "Embedding length about 1.0 for all",
+          "verdict": "PASS",
+          "actual": "Embedding length about 1.0 for all",
+          "notes": ""
+        },
+        "FT-05": {
+          "target_function": "OSNetExtractor.extract_batch",
+          "description": "If batch call crashes, falls back to processing crops one at a time",
+          "expected": "Fallback path produces valid results",
+          "verdict": "PASS",
+          "actual": "Fallback path produces valid results",
+          "notes": "call_count=3 | valid=2"
+        },
+        "FT-06": {
+          "target_function": "OSNetExtractor.extract",
+          "description": "Single crop below the 32x64 size threshold returns None",
+          "expected": "Returns None",
+          "verdict": "PASS",
+          "actual": "Returns None",
+          "notes": "result_is_none=True | valid_box_shape=(512,)"
+        },
+        "FT-07": {
+          "target_function": "OSNetExtractor.extract",
+          "description": "Out-of-bounds box is clipped or handled without error",
+          "expected": "Returns None or a valid 512-d embedding",
+          "verdict": "PASS",
+          "actual": "Returns None or a valid 512-d embedding",
+          "notes": "exception_raised=False | result_type=ndarray | fully_outside_no_exception=True"
+        },
+        "FT-08": {
+          "target_function": "ActiveTrack.ref",
+          "description": "Bank with a single embedding: reference equals that embedding",
+          "expected": "Reference equals the embedding",
+          "verdict": "PASS",
+          "actual": "Reference equals the embedding",
+          "notes": "norm=1.0 | cosine_sim_to_e1=1.0"
+        },
+        "FT-09": {
+          "target_function": "ActiveTrack.ref",
+          "description": "Recency weighting: more recent embeddings dominate the reference",
+          "expected": "Recent embeddings dominate",
+          "verdict": "PASS",
+          "actual": "Recent embeddings dominate",
+          "notes": "sim_old=0.996611 | sim_mid=0.998148 | sim_new=0.998923"
+        },
+        "FT-10": {
+          "target_function": "ActiveTrack.ref",
+          "description": "Full bank: reference is unit-normalized",
+          "expected": "Reference length about 1.0",
+          "verdict": "PASS",
+          "actual": "Reference length about 1.0",
+          "notes": "bank_size=10 | norm=1.0"
+        },
+        "FT-11": {
+          "target_function": "ActiveTrack.update_embedding",
+          "description": "Adding a new embedding grows the bank",
+          "expected": "Bank size increases",
+          "verdict": "PASS",
+          "actual": "Bank size increases",
+          "notes": "bank_size=10"
+        },
+        "FT-12": {
+          "target_function": "ActiveTrack.update_embedding",
+          "description": "Bank is capped at max size; oldest embedding is evicted",
+          "expected": "Bank size stays at the cap",
+          "verdict": "PASS",
+          "actual": "Bank size stays at the cap",
+          "notes": "bank_len=3 | e1_evicted=True | e4_present=True"
+        },
+        "FT-13": {
+          "target_function": "ActiveTrack.update_embedding",
+          "description": "A dissimilar embedding (above the gate distance) is not added",
+          "expected": "Embedding rejected; bank unchanged",
+          "verdict": "PASS",
+          "actual": "Embedding rejected; bank unchanged",
+          "notes": "ref_delta=0.06238 | changed=True"
+        },
+        "FT-14": {
+          "target_function": "ActiveTrack.serialize",
+          "description": "Bank is saved to a .npy file; state dict contains a 'bank_file' key",
+          "expected": "'bank_file' key present in state",
+          "verdict": "PASS",
+          "actual": "'bank_file' key present in state",
+          "notes": "bank_file=track_0007_bank.npy | expected=track_0007_bank.npy | file_exists=True"
+        },
+        "FT-15": {
+          "target_function": "ActiveTrack.deserialize",
+          "description": "Bank is restored from .npy; reference is correct after load",
+          "expected": "Reference correct after restore",
+          "verdict": "PASS",
+          "actual": "Reference correct after restore",
+          "notes": "embeddings_ok=True | box_ok=True | lost_seconds_ok=True"
+        },
+        "FT-16": {
+          "target_function": "ActiveTrack.deserialize",
+          "description": "Missing .npy during restore is handled gracefully",
+          "expected": "No crash",
+          "verdict": "PASS",
+          "actual": "No crash",
+          "notes": "exception_raised=True | exception_type=FileNotFoundError"
+        },
+        "FT-17": {
+          "target_function": "ActiveTrack.serialize",
+          "description": "Round-trip serialize -> deserialize preserves all values",
+          "expected": "All values identical",
+          "verdict": "PASS",
+          "actual": "All values identical",
+          "notes": "all_float32=True"
+        },
+        "FT-18": {
+          "target_function": "PendingTrack.__init__",
+          "description": "Initialized with first box and embedding; frame count is 1",
+          "expected": "Frame count equals 1",
+          "verdict": "PASS",
+          "actual": "Frame count equals 1",
+          "notes": "frames_seen=1 | bank_len=1"
+        },
+        "FT-19": {
+          "target_function": "PendingTrack.ref",
+          "description": "Reference returns the simple (unweighted) mean of accumulated embeddings",
+          "expected": "Reference equals the mean",
+          "verdict": "PASS",
+          "actual": "Reference equals the mean",
+          "notes": "norm=1.0 | sim_e0=0.998 | sim_e1=0.998"
+        },
+        "FT-20": {
+          "target_function": "PendingTrack.add",
+          "description": "add() accumulates embeddings and increments the frame count",
+          "expected": "Bank size grows",
+          "verdict": "PASS",
+          "actual": "Bank size grows",
+          "notes": "frames_seen=3 | bank_len=3 | last_box_matches_last_input=True"
+        },
+        "FT-21": {
+          "target_function": "PendingTrack -> ActiveTrack",
+          "description": "Pending is promoted to active once frame count reaches the warmup threshold",
+          "expected": "Promotion happens",
+          "verdict": "PASS",
+          "actual": "Promotion happens",
+          "notes": "bank_len=16"
+        },
+        "FT-22": {
+          "target_function": "PendingTrack",
+          "description": "Not promoted before the warmup threshold is reached",
+          "expected": "No promotion",
+          "verdict": "PASS",
+          "actual": "No promotion",
+          "notes": "ref_delta=0.068359 | changed=True"
+        },
+        "FT-23": {
+          "target_function": "PersonTracker._box_distance",
+          "description": "Identical boxes have distance 0",
+          "expected": "Distance equals 0.0",
+          "verdict": "PASS",
+          "actual": "Distance equals 0.0",
+          "notes": "distance=0.0"
+        },
+        "FT-24": {
+          "target_function": "PersonTracker._box_distance",
+          "description": "Far-apart boxes (cross-frame teleport) have distance above 0.3",
+          "expected": "Distance greater than 0.3",
+          "verdict": "PASS",
+          "actual": "Distance greater than 0.3",
+          "notes": "distance=1.34154"
+        },
+        "FT-25": {
+          "target_function": "PersonTracker._box_distance",
+          "description": "Distance is normalized by frame width/height so it is scale-invariant",
+          "expected": "Scale-invariant",
+          "verdict": "PASS",
+          "actual": "Scale-invariant",
+          "notes": "dist_640x360=0.3125 | dist_full_res=0.074405"
+        },
+        "FT-26": {
+          "target_function": "PersonTracker._box_distance",
+          "description": "Centroid distance formula matches a manual calculation",
+          "expected": "Distance correct",
+          "verdict": "PASS",
+          "actual": "Distance correct",
+          "notes": "distance=0.0"
+        },
+        "FT-27": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Same person across consecutive frames keeps the same track ID",
+          "expected": "Same track ID",
+          "verdict": "PASS",
+          "actual": "Same track ID",
+          "notes": ""
+        },
+        "FT-28": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Embedding too far from any track -> new pending track created",
+          "expected": "New pending track",
+          "verdict": "PASS",
+          "actual": "New pending track",
+          "notes": "cos_dist=0.75 | matched=0 | new_pending=1"
+        },
+        "FT-29": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Spatial gate blocks cross-frame teleport even when ReID is similar",
+          "expected": "Match blocked by spatial gate",
+          "verdict": "PASS",
+          "actual": "Match blocked by spatial gate",
+          "notes": "cos_dist=0.05 | box_dist=1.3216 | matched=0"
+        },
+        "FT-30": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Larger gap between frames widens the spatial gate (allows wider matches)",
+          "expected": "Wider spatial gate",
+          "verdict": "PASS",
+          "actual": "Wider spatial gate",
+          "notes": "gate=0.8 | box_dist=0.6873 | matched=1"
+        },
+        "FT-31": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Close match (well below the gate) updates the embedding bank",
+          "expected": "Bank updated",
+          "verdict": "PASS",
+          "actual": "Bank updated",
+          "notes": "cos_dist=0.26 | bank_before=1 | bank_after=2"
+        },
+        "FT-32": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Borderline match (in the gate band) does not update the bank",
+          "expected": "Bank unchanged",
+          "verdict": "PASS",
+          "actual": "Bank unchanged",
+          "notes": "cos_dist=0.598 | matched=True | bank_unchanged=True"
+        },
+        "FT-33": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Greedy cost-matrix picks the globally optimal pairing",
+          "expected": "Optimal assignment",
+          "verdict": "PASS",
+          "actual": "Optimal assignment",
+          "notes": ""
+        },
+        "FT-34": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Pending track frame count increments each frame before promotion",
+          "expected": "Frame count increases",
+          "verdict": "PASS",
+          "actual": "Frame count increases",
+          "notes": "frames_seen=9 | still_pending=True"
+        },
+        "FT-35": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Pending is promoted to active when frame count reaches the warmup threshold",
+          "expected": "Promoted",
+          "verdict": "PASS",
+          "actual": "Promoted",
+          "notes": "active_count=1 | promoted_id=1"
+        },
+        "FT-36": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "After promotion, active track's bank is seeded from pending history",
+          "expected": "Bank seeded from pending",
+          "verdict": "PASS",
+          "actual": "Bank seeded from pending",
+          "notes": "bank_size=10"
+        },
+        "FT-37": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Unmatched detection creates a brand-new pending track",
+          "expected": "New pending track",
+          "verdict": "PASS",
+          "actual": "New pending track",
+          "notes": "new_pending=1 | frames_seen=1"
+        },
+        "FT-38": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "None embedding (undersized crop) is silently skipped without crashing",
+          "expected": "Skipped without error",
+          "verdict": "PASS",
+          "actual": "Skipped without error",
+          "notes": "pending_count=1 | none_skipped=True"
+        },
+        "FT-39": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "Empty boxes list -> empty result and active tracks unchanged",
+          "expected": "Empty result",
+          "verdict": "PASS",
+          "actual": "Empty result",
+          "notes": "result_empty=True | active_unchanged=True"
+        },
+        "FT-40": {
+          "target_function": "PersonTracker.match_or_create",
+          "description": "More active tracks than detections -> only some are matched",
+          "expected": "Partial match",
+          "verdict": "PASS",
+          "actual": "Partial match",
+          "notes": "matched_id=2 | active_count=3"
+        },
+        "FT-41": {
+          "target_function": "PersonTracker.get_lost",
+          "description": "Stale track (100s, past 90s max) returned; fresh (30s) is not",
+          "expected": "Only the stale track returned",
+          "verdict": "PASS",
+          "actual": "Only the stale track returned",
+          "notes": ""
+        },
+        "FT-42": {
+          "target_function": "PersonTracker.get_lost",
+          "description": "All tracks fresh -> empty list",
+          "expected": "Empty list",
+          "verdict": "PASS",
+          "actual": "Empty list",
+          "notes": ""
+        },
+        "FT-43": {
+          "target_function": "PersonTracker.get_lost",
+          "description": "No active tracks -> empty list, no exception",
+          "expected": "Empty list",
+          "verdict": "PASS",
+          "actual": "Empty list",
+          "notes": "exception_raised=False"
+        },
+        "FT-44": {
+          "target_function": "PersonTracker.get_lost",
+          "description": "ISO timestamps (from state.json) are parsed correctly",
+          "expected": "Time delta correct",
+          "verdict": "PASS",
+          "actual": "Time delta correct",
+          "notes": "id_in_lost=True | exception_raised=False"
+        },
+        "FT-45": {
+          "target_function": "PersonTracker.get_lost",
+          "description": "Track exactly at the threshold is NOT considered lost (strict greater-than)",
+          "expected": "Not lost at the boundary",
+          "verdict": "PASS",
+          "actual": "Not lost at the boundary",
+          "notes": "id_not_in_lost=True"
+        },
+        "FT-46": {
+          "target_function": "PersonTracker.serialize_state",
+          "description": "Active tracks serialized to state dict with their bank_file keys",
+          "expected": "Keys present in state",
+          "verdict": "PASS",
+          "actual": "Keys present in state",
+          "notes": "next_id_ok=True | keys_ok=True | embeddings_ok=True"
+        },
+        "FT-47": {
+          "target_function": "PersonTracker.restore_state",
+          "description": "Active tracks are re-created correctly from the state dict",
+          "expected": "Tracks restored",
+          "verdict": "PASS",
+          "actual": "Tracks restored",
+          "notes": "active_tracks_empty=True | next_track_id=1 | npy_files_written=0"
+        },
+        "FT-48": {
+          "target_function": "PersonTracker.restore_state",
+          "description": "Missing .npy file during restore is handled gracefully",
+          "expected": "No crash",
+          "verdict": "PASS",
+          "actual": "No crash",
+          "notes": "active_count=1 | track1_present=True | exception_raised=False"
+        },
+        "FT-49": {
+          "target_function": "PersonTracker.remove",
+          "description": "Track is removed from the active dict by ID",
+          "expected": "ID removed",
+          "verdict": "PASS",
+          "actual": "ID removed",
+          "notes": "2_removed=True | 1_intact=True | 3_intact=True"
+        },
+        "FT-50": {
+          "target_function": "PersonTracker.remove",
+          "description": "Removing a non-existent ID raises no error",
+          "expected": "No exception raised",
+          "verdict": "PASS",
+          "actual": "No exception raised",
+          "notes": "pool_unchanged=True | exception_raised=False"
+        },
+        "FT-51": {
+          "target_function": "LineCrossDetector.get_side",
+          "description": "Point above the line -> side is +1",
+          "expected": "Side is +1",
+          "verdict": "PASS",
+          "actual": "Side is +1",
+          "notes": "nx=0.8233 | ny=0.3309 | side=above"
+        },
+        "FT-52": {
+          "target_function": "LineCrossDetector.get_side",
+          "description": "Point below the line -> side is -1",
+          "expected": "Side is -1",
+          "verdict": "PASS",
+          "actual": "Side is -1",
+          "notes": "nx=0.7946 | ny=0.7681 | side=below"
+        },
+        "FT-53": {
+          "target_function": "LineCrossDetector.get_side",
+          "description": "Point exactly on the line -> side is 0",
+          "expected": "Side is 0",
+          "verdict": "PASS",
+          "actual": "Side is 0",
+          "notes": "nx=0.5 | ny=0.3 | interpolated_line_y=0.5"
+        },
+        "FT-54": {
+          "target_function": "LineCrossDetector.get_side",
+          "description": "Vertical line: side is determined correctly",
+          "expected": "Sign is correct",
+          "verdict": "PASS",
+          "actual": "Sign is correct",
+          "notes": "side=above | exception_raised=False"
+        },
+        "FT-55": {
+          "target_function": "LineCrossDetector.update",
+          "description": "Crossing is detected when a point switches sides",
+          "expected": "Crossing is True",
+          "verdict": "PASS",
+          "actual": "Crossing is True",
+          "notes": "result=None | side_recorded=above | centroid_source=real"
+        },
+        "FT-56": {
+          "target_function": "LineCrossDetector.update",
+          "description": "No crossing when a point stays on the same side",
+          "expected": "Crossing is False",
+          "verdict": "PASS",
+          "actual": "Crossing is False",
+          "notes": "result=enter | centroid_source=real"
+        },
+        "FT-57": {
+          "target_function": "LineCrossDetector.update",
+          "description": "First observation just stores the side; no crossing is triggered",
+          "expected": "Crossing is False",
+          "verdict": "PASS",
+          "actual": "Crossing is False",
+          "notes": "result=exit | centroid_source=real"
+        },
+        "FT-58": {
+          "target_function": "LineCrossDetector.update",
+          "description": "Direction (in/out) is reported correctly on a crossing event",
+          "expected": "Direction correct",
+          "verdict": "PASS",
+          "actual": "Direction correct",
+          "notes": "result=None | centroid_source=real"
+        },
+        "FT-59": {
+          "target_function": "LineCrossDetector.cleanup",
+          "description": "Stale track entries are pruned from the crossing state",
+          "expected": "Entries removed",
+          "verdict": "PASS",
+          "actual": "Entries removed",
+          "notes": "3_removed=True | 7_intact=True"
+        },
+        "FT-60": {
+          "target_function": "LineCrossDetector.get_state",
+          "description": "Returns the current entry/exit crossing counts",
+          "expected": "Counts correct",
+          "verdict": "PASS",
+          "actual": "Counts correct",
+          "notes": "unchanged=True | exception_raised=False"
+        },
+        "FT-61": {
+          "target_function": "LineCrossDetector.get_state",
+          "description": "Returns an empty dict after reset",
+          "expected": "Empty dict",
+          "verdict": "PASS",
+          "actual": "Empty dict",
+          "notes": "match=True | source=real"
+        }
+      }
+    }
+  }
+}
